@@ -1,0 +1,117 @@
+EVIDENCIA DE PRUEBAS RAUL-M — Equipo 4
+Fecha UTC: 2026-10-30T00:12:09+00:00
+Plataforma: Windows-10-10.0.19045-SP0
+Python: 3.11.18
+numpy: 2.4.6
+pybullet-arm64: 3.2.8
+matplotlib: 3.11.2
+SHA256 código/modelo: 6b70115a0832cf486a4e10b078cfbf071d70a74cafa0dd7e317f3fa9f2c83808
+
+Cinemática Python y URDF
+OK    forma cerrada vs tabla DH: error máximo 1.7e-13
+OK    fk(ik(pose)) = pose: error máximo 1.7e-13
+OK    brazo.urdf vs tabla DH, posición [mm]: error máximo 3.0e-05
+OK    brazo.urdf vs tabla DH, dirección de la pinza: error máximo 3.8e-07
+OK    límites de brazo.urdf vs parametros.py: error máximo 7.3e-06
+      casos para C guardados en C:\Users\joaco\Desktop\Control proyecto\Proyecto\pruebas\casos.csv
+pybullet build time: Mar 13 2026 19:16:55
+RESULTADO: OK
+
+Compilación C++ cinematica
+
+RESULTADO: OK
+
+Prueba C++ cinematica
+OK    fk de C vs Python:   error máximo 0.0001
+OK    fk(ik(pose)) = pose: error máximo 0.0001
+999 casos, 0 fallas
+RESULTADO: OK
+
+Compilación C++ movimiento
+
+RESULTADO: OK
+
+Prueba C++ movimiento
+OK    PCA9685 despierto con auto-incremento
+OK    PCA9685 a 50 Hz (prescaler 121)
+OK    servos en la pose de arranque
+OK    los servos enfrentados giran al reves uno del otro
+OK    rechaza ángulos fuera de los límites
+OK    rechaza poses bajo el piso virtual
+OK    rechaza tiempo cero
+OK    rechaza exceso de velocidad
+OK    rechaza angulos no finitos
+OK    acepta ir al reposo
+OK    llega en el tiempo pedido
+OK    arranca suave (velocidad casi cero al principio)
+OK    velocidad máxima del codo como la del perfil (70 °/s)
+      base    pide 0 °/s como máximo
+      hombro  pide 42 °/s como máximo
+      codo    pide 70 °/s como máximo
+      muneca  pide 14 °/s como máximo
+OK    ningún servo tiene que ir más rápido de lo permitido
+OK    servos en el reposo
+OK    acepta el movimiento que se va a frenar
+OK    frena a mitad de camino y se queda ahí
+OK    apagar: salidas del PCA9685 apagadas
+0 fallas
+RESULTADO: OK
+
+pruebas_rutinas.py
+OK    REPOSO igual en configuracion.h y parametros.py: [0, 90, -150, 60]
+      REPOSO deja la punta a 165 mm del eje de la base; las rutinas circulan en PLEGADO, que la deja a 165 mm
+
+tomar objeto de mesa
+  OK    poner la mesa y el objeto
+  OK    abrir la pinza
+  OK    subir por encima de la mesa   (3 s, pico 26 grados/s)
+  OK    bajar frente al objeto   (1.5 s, pico 28 grados/s)
+  OK    entrar sobre el objeto   (1.5 s, pico 26 grados/s)
+  OK    cerrar la pinza sobre el objeto
+  OK    levantar el objeto   (1.5 s, pico 24 grados/s)
+  OK    retirar de la mesa   (2 s, pico 19 grados/s)
+
+depositar en plataforma de carga
+  OK    llevar el objeto sobre la caja de carga   (5 s, pico 24 grados/s)
+  OK    bajar hasta el punto de soltar   (2 s, pico 27 grados/s)
+  OK    abrir la pinza y soltar el objeto
+  OK    retirar la pinza   (2 s, pico 27 grados/s)
+
+volver al reposo
+  OK    plegado
+
+presionar boton del ascensor
+  OK    ir al ascensor
+  OK    cerrar la pinza para presionar
+  OK    aproximar al panel   (4 s, pico 51 grados/s)
+  OK    presionar el boton   (1.5 s, pico 36 grados/s)
+  OK    soltar el boton   (1.5 s, pico 36 grados/s)
+
+TODO OK
+pybullet build time: Mar 13 2026 19:16:55
+RESULTADO: OK
+
+pruebas_error.py
+OK    resoluciones vs configuracion.h: diferencia máxima 0.0e+00°
+OK    µs por cuenta vs movimiento.cpp: diferencia 0.0e+00 µs
+OK    la pinza cuelga 18 mm del eje de la muñeca: diferencia máxima 0.0e+00
+OK    redondeo real dentro del peor caso de resolución: 0 configuraciones lo superan
+OK    la calibración domina sobre la resolución: pesa 9 veces más (mínimo esperado 5)
+OK    el máximo error ocurre con el brazo estirado: la punta está al 100 % del alcance (452 de 452.0 mm)
+OK    el error crece con la distancia al hombro: entre 5.9 y 15.8 mm por cada 100 mm (esperado entre 4 y 25)
+OK    error típico medio bajo la cota: 9.6 mm (cota 12 mm)
+OK    error de peor caso bajo la cota: 35.1 mm (cota 40 mm)
+
+TODO OK
+pybullet build time: Mar 13 2026 19:16:55
+RESULTADO: OK
+
+pruebas_modelo.py
+OK masas V4 sin doble conteo; estática analítica vs URDF: 6.66e-16 N*m
+OK pedestal conservado en todos los escenarios
+OK poses de ejemplo ESP32 iguales a los TCP de las rutinas
+pybullet build time: Mar 13 2026 19:16:55
+RESULTADO: OK
+
+VERIFICACIÓN COMPLETA: seis suites aprobadas y dos compilaciones C++ correctas.
+Alcance: simulación cinemática y C++ de escritorio; no prueba física ni compilación para ESP32.

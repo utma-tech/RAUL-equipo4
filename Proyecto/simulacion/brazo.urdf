@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+<!--
+  Brazo RAUL-M, 4 grados de libertad y pinza. Escrito a mano.
+  Medidas en metros y radianes, las mismas que programa_esp32/configuracion.h:
+    D1 = 0.131   placa → hombro       A2 = 0.200   hombro → codo
+    A3 = 0.170   codo → muñeca        pinza: 0.080 adelante y 0.018 abajo desde la muñeca
+
+  No hay giro (roll) de muñeca: el CAD tiene cuatro ejes y la pinza, así que las placas de
+  la muñeca y el cuerpo de la pinza son un solo eslabón colgado de q4. Y la pinza va 18 mm
+  por debajo del eje de la muñeca, que es donde está de verdad. Ver GUIA_EQUIPO.md.
+
+  Las formas salen de las cajas envolventes del CAD y sólo afectan los choques.
+  Las masas, centros de masa e inercias las pasó el Equipo 3 (RAUL_M_V4). La inercia es la
+  del eje de la junta; para ixx e izz no hay dato y se repite el mismo valor.
+
+  En q = 0 el brazo queda horizontal, apuntando a +x.
+  Hombro, codo y muñeca giran sobre -y, así un ángulo positivo levanta.
+-->
+<robot name="raul_m_brazo">
+
+  <material name="gris"><color rgba="0.5 0.5 0.5 1"/></material>
+  <material name="gris_oscuro"><color rgba="0.3 0.3 0.3 1"/></material>
+  <material name="azul"><color rgba="0.1 0.5 0.9 1"/></material>
+  <material name="naranja"><color rgba="1.0 0.5 0.1 1"/></material>
+
+  <!-- ─── Eslabones ─────────────────────────────────────────── -->
+
+  <!-- Fijo a la plataforma de RAUL: placa de montaje + pedestal.
+       El servo de la base va adentro del pedestal. -->
+  <link name="base">
+    <visual>
+      <origin xyz="0 0 0.004"/>
+      <geometry><box size="0.160 0.160 0.008"/></geometry>
+      <material name="gris_oscuro"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.004"/>
+      <geometry><box size="0.160 0.160 0.008"/></geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.0115 0 0.025"/>
+      <geometry><box size="0.075 0.052 0.038"/></geometry>
+      <material name="gris_oscuro"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0115 0 0.025"/>
+      <geometry><box size="0.075 0.052 0.038"/></geometry>
+    </collision>
+    <inertial><mass value="0"/><inertia ixx="0" iyy="0" izz="0" ixy="0" ixz="0" iyz="0"/></inertial>
+  </link>
+
+  <!-- Gira con la base: plato giratorio (Ø0.110) + torre que lleva los dos servos del hombro -->
+  <link name="torre">
+    <visual>
+      <origin xyz="0 0 0.0562"/>
+      <geometry><cylinder radius="0.055" length="0.0186"/></geometry>
+      <material name="gris"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.0562"/>
+      <geometry><cylinder radius="0.055" length="0.0186"/></geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0.1005"/>
+      <geometry><box size="0.060 0.163 0.101"/></geometry>
+      <material name="gris"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.1005"/>
+      <geometry><box size="0.060 0.163 0.101"/></geometry>
+    </collision>
+    <!-- Torre: 0,363 kg, centro de masa 43,3 mm por debajo del eje del hombro -->
+    <inertial>
+      <origin xyz="0 0 0.0877"/>
+      <mass value="0.363"/>
+      <inertia ixx="1.5e-3" iyy="1.5e-3" izz="1.5e-3" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <!-- Brazo superior: eslabón 1 (A2 = 0.200) + los dos servos del codo, montados sobre él -->
+  <link name="brazo">
+    <visual>
+      <origin xyz="0.0998 0 0"/>
+      <geometry><box size="0.2165 0.100 0.035"/></geometry>
+      <material name="azul"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0998 0 0"/>
+      <geometry><box size="0.2165 0.100 0.035"/></geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.1898 0 0"/>
+      <geometry><box size="0.0604 0.148 0.034"/></geometry>
+      <material name="gris"/>
+    </visual>
+    <collision>
+      <origin xyz="0.1898 0 0"/>
+      <geometry><box size="0.0604 0.148 0.034"/></geometry>
+    </collision>
+    <!-- Eslabón 1 con los servos y soportes del codo: 0,266 kg, centro de masa a 138,6 mm -->
+    <inertial>
+      <origin xyz="0.1386 0 0"/>
+      <mass value="0.266"/>
+      <inertia ixx="1.52e-3" iyy="1.52e-3" izz="1.52e-3" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <!-- Antebrazo: eslabón 2 (A3 = 0.170) + los dos servos de la muñeca, montados sobre él -->
+  <link name="antebrazo">
+    <visual>
+      <origin xyz="0.08475 0 0"/>
+      <geometry><box size="0.1865 0.100 0.031"/></geometry>
+      <material name="azul"/>
+    </visual>
+    <collision>
+      <origin xyz="0.08475 0 0"/>
+      <geometry><box size="0.1865 0.100 0.031"/></geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.1516 0 0"/>
+      <geometry><box size="0.0771 0.158 0.034"/></geometry>
+      <material name="gris"/>
+    </visual>
+    <collision>
+      <origin xyz="0.1516 0 0"/>
+      <geometry><box size="0.0771 0.158 0.034"/></geometry>
+    </collision>
+    <!-- Eslabón 2 con los servos y soportes de la muñeca: 0,281 kg, centro de masa a 125 mm -->
+    <inertial>
+      <origin xyz="0.125 0 0"/>
+      <mass value="0.281"/>
+      <inertia ixx="9.12e-4" iyy="9.12e-4" izz="9.12e-4" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <!-- Todo lo que cuelga de la muñeca: las placas del cabeceo, centradas en el eje, y el
+       cuerpo de la pinza con su servo, 0.018 más abajo. Es un solo eslabón porque no hay
+       articulación de giro entre una cosa y la otra. -->
+  <link name="pinza">
+    <visual>
+      <origin xyz="0.0222 0 0"/>
+      <geometry><box size="0.0615 0.100 0.027"/></geometry>
+      <material name="gris"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0222 0 0"/>
+      <geometry><box size="0.0615 0.100 0.027"/></geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.027 0 -0.0205"/>
+      <geometry><box size="0.082 0.080 0.033"/></geometry>
+      <material name="gris"/>
+    </visual>
+    <collision>
+      <origin xyz="0.027 0 -0.0205"/>
+      <geometry><box size="0.082 0.080 0.033"/></geometry>
+    </collision>
+    <!-- Muñeca + pinza con su servo: 0,186 kg, centro de masa a (29,4 ; -26,8) mm.
+         La componente en z es negativa porque la pinza cuelga por debajo del eje. -->
+    <inertial>
+      <origin xyz="0.0294 0 -0.0268"/>
+      <mass value="0.186"/>
+      <inertia ixx="1.83e-4" iyy="1.83e-4" izz="1.83e-4" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <!-- Masa de mordazas incluida en los 0,186 kg del conjunto pinza.
+       Los enlaces auxiliares de dedos y TCP no añaden masa. -->
+  <!-- Mordazas de la pinza. Cada una va de x = 0.050 (donde salen del bastidor) a x = 0.080
+       (la punta, el TCP), o sea 0.030 de largo, y desliza sobre y. En el CAD son dos sectores
+       dentados que giran; acá se las modela deslizando, que es una aproximación para visualizar el agarre, no su geometría exacta. -->
+  <link name="dedo_izq">
+    <visual>
+      <origin xyz="0.015 0 0"/>
+      <geometry><box size="0.030 0.013 0.008"/></geometry>
+      <material name="naranja"/>
+    </visual>
+    <collision>
+      <origin xyz="0.015 0 0"/>
+      <geometry><box size="0.030 0.013 0.008"/></geometry>
+    </collision>
+    <inertial><mass value="0"/><inertia ixx="1e-6" iyy="1e-6" izz="1e-6" ixy="0" ixz="0" iyz="0"/></inertial>
+  </link>
+
+  <link name="dedo_der">
+    <visual>
+      <origin xyz="0.015 0 0"/>
+      <geometry><box size="0.030 0.013 0.008"/></geometry>
+      <material name="naranja"/>
+    </visual>
+    <collision>
+      <origin xyz="0.015 0 0"/>
+      <geometry><box size="0.030 0.013 0.008"/></geometry>
+    </collision>
+    <inertial><mass value="0"/><inertia ixx="1e-6" iyy="1e-6" izz="1e-6" ixy="0" ixz="0" iyz="0"/></inertial>
+  </link>
+
+  <!-- Punto de referencia en la punta de las mordazas (TCP), sin forma -->
+  <link name="tcp">
+    <inertial><mass value="0"/><inertia ixx="1e-7" iyy="1e-7" izz="1e-7" ixy="0" ixz="0" iyz="0"/></inertial>
+  </link>
+
+  <!-- ─── Articulaciones ────────────────────────────────────── -->
+  <!-- Límites: mismos que QMIN / QMAX de configuracion.h, pasados a radianes -->
+
+  <!-- q1 base: -90° a 90° (servo MG995, 180° de recorrido) -->
+  <joint name="q1_base" type="revolute">
+    <parent link="base"/><child link="torre"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.5708" upper="1.5708" effort="0.98" velocity="1.570796"/>
+  </joint>
+
+  <!-- q2 hombro: 0° a 180°. Está a D1 = 0.131 sobre la cara de montaje de la placa -->
+  <joint name="q2_hombro" type="revolute">
+    <parent link="torre"/><child link="brazo"/>
+    <origin xyz="0 0 0.131"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="0" upper="3.1416" effort="1.96" velocity="1.570796"/>
+  </joint>
+
+  <!-- q3 codo: -150° a 30°. Está a A2 = 0.200 del hombro -->
+  <joint name="q3_codo" type="revolute">
+    <parent link="brazo"/><child link="antebrazo"/>
+    <origin xyz="0.200 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="-2.6180" upper="0.5236" effort="1.96" velocity="1.570796"/>
+  </joint>
+
+  <!-- q4 muñeca (cabeceo): -90° a 90°. Está a A3 = 0.170 del codo -->
+  <joint name="q4_muneca" type="revolute">
+    <parent link="antebrazo"/><child link="pinza"/>
+    <origin xyz="0.170 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="1.96" velocity="1.570796"/>
+  </joint>
+
+  <!-- Punta de las mordazas: 0.080 adelante y 0.018 abajo del eje de la muñeca -->
+  <joint name="fijo_tcp" type="fixed">
+    <parent link="pinza"/><child link="tcp"/>
+    <origin xyz="0.080 0 -0.018"/>
+  </joint>
+
+  <!-- Las mordazas van ÚLTIMAS a propósito. PyBullet numera las articulaciones en el orden
+       en que aparecen acá, así que poniéndolas al final las cuatro del brazo siguen siendo
+       la 0 a la 3 y el tcp sigue siendo la 4.
+       El valor de la articulación es la distancia del centro de la mordaza al eje:
+       0.0139 cerrada (14,8 mm de luz, como está dibujada en el CAD) y 0.0315 abierta
+       (50 mm, el cubo). Cuánto abre de verdad falta confirmarlo con el Equipo 3. -->
+  <joint name="dedo_izquierdo" type="prismatic">
+    <parent link="pinza"/><child link="dedo_izq"/>
+    <origin xyz="0.050 0 -0.018"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="0.0139" upper="0.0315" effort="5" velocity="0.1"/>
+  </joint>
+
+  <joint name="dedo_derecho" type="prismatic">
+    <parent link="pinza"/><child link="dedo_der"/>
+    <origin xyz="0.050 0 -0.018"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="0.0139" upper="0.0315" effort="5" velocity="0.1"/>
+  </joint>
+
+</robot>

@@ -1,0 +1,14 @@
+# Crear solo si no existe un entorno funcional. No actualizar uno activo sin revisar.
+name: raul_sim
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - pybullet-arm64==3.2.8
+      - numpy
+      - matplotlib
+      - pillow
+      - python-docx
+      - pypdf
